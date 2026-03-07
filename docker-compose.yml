@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: debate-prep
+    ports:
+      - "8501:8501"
+    volumes:
+      # 挂载本地文档目录（用户可自定义）
+      - ./documents:/app/documents:ro
+      # 持久化数据存储
+      - debate-data:/app/data
+      # 开发模式：挂载代码目录，修改代码后自动热重载
+      - ./backend/app:/app/app:ro
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  debate-data:
+    driver: local
