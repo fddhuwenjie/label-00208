@@ -44,9 +44,11 @@ data/index/
 data/vectors/
 data/*.db
 
-# Model cache
+# Model cache (AI 模型缓存，不匹配 app/models 代码目录)
 .cache/
-models/
+/models/
+**/model_cache/
+**/.transformers_cache/
 
 # Logs
 *.log
