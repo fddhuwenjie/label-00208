@@ -124,3 +124,30 @@ def split_into_paragraphs(text: str, min_length: int = 10) -> list[str]:
     """将文本分割为段落"""
     paragraphs = re.split(r"\n\s*\n|\n{2,}", text)
     return [p.strip() for p in paragraphs if len(p.strip()) >= min_length]
+
+
+def strip_html_tags(text: str) -> str:
+    """
+    清理文本中的 HTML 标签，只保留纯文本内容
+    
+    Args:
+        text: 可能包含 HTML 标签的文本
+    
+    Returns:
+        清理后的纯文本
+    """
+    if not text:
+        return ""
+    
+    # 移除所有 HTML 标签
+    clean = re.sub(r'<[^>]+>', '', text)
+    # 处理 HTML 实体
+    clean = clean.replace('&nbsp;', ' ')
+    clean = clean.replace('&lt;', '<')
+    clean = clean.replace('&gt;', '>')
+    clean = clean.replace('&amp;', '&')
+    clean = clean.replace('&quot;', '"')
+    clean = clean.replace('&#39;', "'")
+    # 清理多余空白
+    clean = re.sub(r'\s+', ' ', clean)
+    return clean.strip()

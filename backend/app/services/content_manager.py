@@ -617,7 +617,10 @@ class ContentManager:
         include_tags: bool = True
     ) -> str:
         """导出为 Markdown 格式"""
-        lines = ["# DebatePrep 导出", "", f"*导出时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*", ""]
+        # 格式化当前时间，确保格式正确
+        now = datetime.now()
+        export_time = f"{now.year:04d}-{now.month:02d}-{now.day:02d} {now.hour:02d}:{now.minute:02d}:{now.second:02d}"
+        lines = ["# DebatePrep 导出", "", f"*导出时间: {export_time}*", ""]
         
         if include_favorites:
             favorites = self.get_all_favorites()

@@ -6,6 +6,7 @@ from app.services.content_manager import ContentManager
 from app.services.semantic_analyzer import auto_classify_stance
 from app.models.argument import ArgumentSide
 from app.components.argument_graph import render_argument_graph, render_comparison_view
+from app.utils.text_utils import strip_html_tags
 
 
 def render_arguments_page():
@@ -328,7 +329,9 @@ def render_argument_module(arg, manager, side_class: str):
     if arg.evidences:
         evidences_html = '<div class="arg-section-title">📎 支撑论据</div>'
         for ev in arg.evidences:
-            content = str(ev.content)[:300] + '...' if len(str(ev.content)) > 300 else str(ev.content)
+            # 清理 HTML 标签，确保只显示纯文本
+            clean_content = strip_html_tags(str(ev.content))
+            content = clean_content[:300] + '...' if len(clean_content) > 300 else clean_content
             safe_content = html.escape(content)
             
             # 构建来源信息
@@ -367,13 +370,13 @@ def render_argument_module(arg, manager, side_class: str):
     </div>
     """, unsafe_allow_html=True)
     
-    # 操作按钮行
-    c1, c2, c3 = st.columns([1, 1, 5])
+    # 操作按钮行 - 使用更紧凑的布局
+    c1, c2 = st.columns(2)
     with c1:
-        if st.button("➕ 添加论据", key=f"add_{arg.id}", type="secondary"):
+        if st.button("➕ 添加论据", key=f"add_{arg.id}", type="secondary", use_container_width=True):
             st.session_state[f"show_form_{arg.id}"] = not st.session_state.get(f"show_form_{arg.id}", False)
     with c2:
-        if st.button("🗑️ 删除", key=f"del_{arg.id}"):
+        if st.button("🗑️ 删除", key=f"del_{arg.id}", use_container_width=True):
             manager.delete_argument(arg.id)
             st.toast("已删除", icon="🗑️")
             st.rerun()

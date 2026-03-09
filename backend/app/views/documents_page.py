@@ -51,21 +51,22 @@ def render_directory_settings():
     # 保存目录设置
     st.session_state.documents_dir = doc_dir
     
-    # 显示目录状态
+    # 获取演示文档（确保已初始化）
     demo_docs = st.session_state.get("documents", [])
+    
+    # 显示目录状态
     if os.path.isdir(doc_dir):
         file_count = sum(1 for _ in scan_directory(doc_dir))
         if file_count > 0:
             st.success(f"✅ 目录有效，发现 {file_count} 个支持的文件")
         elif demo_docs:
-            st.info(f"📚 演示模式：已加载 {len(demo_docs)} 个示例文档")
+            st.info(f"📚 目录为空，当前显示 {len(demo_docs)} 个演示文档")
         else:
             st.info("📂 目录为空，请添加文档后点击扫描")
     elif doc_dir:
+        st.warning("⚠️ 目录不存在，请检查路径")
         if demo_docs:
-            st.info(f"📚 演示模式：已加载 {len(demo_docs)} 个示例文档")
-        else:
-            st.warning("⚠️ 目录不存在，请检查路径")
+            st.info(f"📚 演示模式：当前显示 {len(demo_docs)} 个演示文档")
 
 
 def scan_documents(directory: str):

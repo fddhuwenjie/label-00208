@@ -97,13 +97,18 @@ def init_demo_documents():
     用户应将文档放入 documents/ 目录，系统会自动解析。
     """
     # 检查 session_state 是否已有文档数据
-    if st.session_state.get("documents"):
+    existing_docs = st.session_state.get("documents", [])
+    if existing_docs and len(existing_docs) > 0:
         return
     
     # 检查索引是否已存在数据
-    engine = SearchEngine()
-    existing_count = engine.get_document_count()
-    skip_indexing = existing_count > 0
+    try:
+        engine = SearchEngine()
+        existing_count = engine.get_document_count()
+        skip_indexing = existing_count > 0
+    except Exception as e:
+        logger.warning(f"检查索引时出错: {e}")
+        skip_indexing = False
     
     # ========== [演示数据] 模拟文档列表 ==========
     # 包含 12 份模拟文档，涵盖以下主题：
