@@ -305,103 +305,104 @@ def init_database_data():
     """
     cm = ContentManager()
     
-    # 检查是否已有数据，避免重复初始化
-    if cm.get_all_tags() or cm.get_all_favorites() or cm.get_all_arguments():
-        return
+    # 分别检查各类数据是否已存在，独立初始化
+    has_tags = len(cm.get_all_tags()) > 0
+    has_favorites = len(cm.get_all_favorites()) > 0
+    has_arguments = len(cm.get_all_arguments()) > 0
     
-    # 创建示例标签
-    tags_data = [
-        ("经济", "#3B82F6"),
-        ("社会", "#22C55E"),
-        ("教育", "#F59E0B"),
-        ("科技", "#8B5CF6"),
-        ("环境", "#10B981"),
-        ("政策", "#EC4899"),
-    ]
-    
-    tags = {}
-    for name, color in tags_data:
-        tag = cm.create_tag(name, color)
-        if tag:
-            tags[name] = tag
-    
-    # 创建示例收藏
-    favorites_data = [
-        {
-            "document_id": "doc_001",
-            "file_name": "2024年中国青年就业报告.pdf",
-            "content": "根据调查显示，2024年应届毕业生中，有67.8%选择进入民营企业就业，较去年提升5.2个百分点。同时，灵活就业比例达到15.3%，反映出年轻人就业观念的变化。",
-            "folder": "就业数据"
-        },
-        {
-            "document_id": "doc_002",
-            "file_name": "新能源汽车产业分析.docx",
-            "content": "截至2024年第三季度，中国新能源汽车保有量突破2000万辆，渗透率达到38.6%。动力电池技术持续突破，固态电池商业化进程加速。",
-            "folder": "产业分析"
-        },
-        {
-            "document_id": "doc_003",
-            "file_name": "人工智能伦理问题研究.docx",
-            "content": "AI决策的可解释性问题日益突出。研究表明，在医疗诊断、金融信贷等高风险场景中，85%的受访者认为了解AI决策依据非常重要。",
-            "folder": "科技伦理"
-        },
-    ]
-    
-    for fav in favorites_data:
-        cm.add_favorite(**fav)
-    
-    # 创建示例论点
-    arguments_data = [
-        {
-            "title": "人工智能将创造更多就业机会",
-            "description": "技术进步历来创造新岗位，AI也不例外",
-            "side": ArgumentSide.PRO,
-            "evidences": [
-                {
-                    "content": "世界经济论坛预测，到2025年AI将创造9700万个新工作岗位，同时取代8500万个岗位，净增1200万个就业机会。",
-                    "source_file_name": "世界经济论坛报告2024.pdf"
-                },
-                {
-                    "content": "历史数据显示，自动化技术每取代1个岗位，平均创造1.3个新岗位，且新岗位薪资水平通常更高。",
-                    "source_file_name": "麦肯锡全球研究院报告.docx"
-                }
-            ]
-        },
-        {
-            "title": "人工智能加剧就业结构性矛盾",
-            "description": "AI替代效应对低技能劳动者冲击巨大",
-            "side": ArgumentSide.CON,
-            "evidences": [
-                {
-                    "content": "研究显示，受AI影响最大的是重复性工作岗位，这些岗位的从业者往往缺乏快速转型所需的技能和资源。",
-                    "source_file_name": "劳动力市场分析.pdf"
-                },
-                {
-                    "content": "低收入群体再就业周期平均为18个月，是高收入群体的3倍，技术变革加剧社会不平等。",
-                    "source_file_name": "社会公平研究报告.docx"
-                }
-            ]
-        },
-        {
-            "title": "新能源汽车是应对气候变化的有效手段",
-            "description": "交通电动化显著减少碳排放",
-            "side": ArgumentSide.PRO,
-            "evidences": [
-                {
-                    "content": "生命周期分析表明，电动汽车全生命周期碳排放比燃油车低40%-60%，且随着电网清洁化比例提升，这一优势将进一步扩大。",
-                    "source_file_name": "碳排放研究.pdf"
-                }
-            ]
-        },
-    ]
-    
-    for arg_data in arguments_data:
-        evidences = arg_data.pop("evidences", [])
-        arg = cm.create_argument(**arg_data)
+    # 创建示例标签（仅当没有标签时）
+    if not has_tags:
+        tags_data = [
+            ("经济", "#3B82F6"),
+            ("社会", "#22C55E"),
+            ("教育", "#F59E0B"),
+            ("科技", "#8B5CF6"),
+            ("环境", "#10B981"),
+            ("政策", "#EC4899"),
+        ]
         
-        for ev in evidences:
-            cm.add_evidence(
-                argument_id=arg.id,
-                content=ev["content"],
-                source_file_name=ev.get("source_file_name")
-            )
+        for name, color in tags_data:
+            cm.create_tag(name, color)
+    
+    # 创建示例收藏（仅当没有收藏时）
+    if not has_favorites:
+        favorites_data = [
+            {
+                "document_id": "doc_001",
+                "file_name": "2024年中国青年就业报告.pdf",
+                "content": "根据调查显示，2024年应届毕业生中，有67.8%选择进入民营企业就业，较去年提升5.2个百分点。同时，灵活就业比例达到15.3%，反映出年轻人就业观念的变化。",
+                "folder": "就业数据"
+            },
+            {
+                "document_id": "doc_002",
+                "file_name": "新能源汽车产业分析.docx",
+                "content": "截至2024年第三季度，中国新能源汽车保有量突破2000万辆，渗透率达到38.6%。动力电池技术持续突破，固态电池商业化进程加速。",
+                "folder": "产业分析"
+            },
+            {
+                "document_id": "doc_003",
+                "file_name": "人工智能伦理问题研究.docx",
+                "content": "AI决策的可解释性问题日益突出。研究表明，在医疗诊断、金融信贷等高风险场景中，85%的受访者认为了解AI决策依据非常重要。",
+                "folder": "科技伦理"
+            },
+        ]
+        
+        for fav in favorites_data:
+            cm.add_favorite(**fav)
+    
+    # 创建示例论点（仅当没有论点时）
+    if not has_arguments:
+        arguments_data = [
+            {
+                "title": "人工智能将创造更多就业机会",
+                "description": "技术进步历来创造新岗位，AI也不例外",
+                "side": ArgumentSide.PRO,
+                "evidences": [
+                    {
+                        "content": "世界经济论坛预测，到2025年AI将创造9700万个新工作岗位，同时取代8500万个岗位，净增1200万个就业机会。",
+                        "source_file_name": "世界经济论坛报告2024.pdf"
+                    },
+                    {
+                        "content": "历史数据显示，自动化技术每取代1个岗位，平均创造1.3个新岗位，且新岗位薪资水平通常更高。",
+                        "source_file_name": "麦肯锡全球研究院报告.docx"
+                    }
+                ]
+            },
+            {
+                "title": "人工智能加剧就业结构性矛盾",
+                "description": "AI替代效应对低技能劳动者冲击巨大",
+                "side": ArgumentSide.CON,
+                "evidences": [
+                    {
+                        "content": "研究显示，受AI影响最大的是重复性工作岗位，这些岗位的从业者往往缺乏快速转型所需的技能和资源。",
+                        "source_file_name": "劳动力市场分析.pdf"
+                    },
+                    {
+                        "content": "低收入群体再就业周期平均为18个月，是高收入群体的3倍，技术变革加剧社会不平等。",
+                        "source_file_name": "社会公平研究报告.docx"
+                    }
+                ]
+            },
+            {
+                "title": "新能源汽车是应对气候变化的有效手段",
+                "description": "交通电动化显著减少碳排放",
+                "side": ArgumentSide.PRO,
+                "evidences": [
+                    {
+                        "content": "生命周期分析表明，电动汽车全生命周期碳排放比燃油车低40%-60%，且随着电网清洁化比例提升，这一优势将进一步扩大。",
+                        "source_file_name": "碳排放研究.pdf"
+                    }
+                ]
+            },
+        ]
+        
+        for arg_data in arguments_data:
+            evidences = arg_data.pop("evidences", [])
+            arg = cm.create_argument(**arg_data)
+            
+            for ev in evidences:
+                cm.add_evidence(
+                    argument_id=arg.id,
+                    content=ev["content"],
+                    source_file_name=ev.get("source_file_name")
+                )

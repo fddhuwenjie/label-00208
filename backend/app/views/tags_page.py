@@ -40,6 +40,14 @@ def render_tags_page():
     
     manager = get_content_manager()
     
+    # 检查是否需要清空输入框（创建成功后的标志）
+    if st.session_state.get("clear_tag_input", False):
+        st.session_state["clear_tag_input"] = False
+        # 使用不同的 key 来强制重置输入框
+        st.session_state["tag_form_key"] = st.session_state.get("tag_form_key", 0) + 1
+    
+    form_key = st.session_state.get("tag_form_key", 0)
+    
     # 创建新标签
     st.markdown("""
     <div style="color: #F8FAFC; font-size: 16px; font-weight: 500; margin-bottom: 12px;">
@@ -53,16 +61,15 @@ def render_tags_page():
         new_tag_name = st.text_input(
             "标签名称",
             placeholder="输入标签名称...",
-            value=st.session_state.get("tag_input_value", ""),
-            key="new_tag_name",
+            key=f"new_tag_name_{form_key}",
             label_visibility="collapsed"
         )
     
     with col2:
         tag_color = st.color_picker(
             "颜色",
-            value=st.session_state.get("tag_color_value", "#6366F1"),
-            key="new_tag_color",
+            value="#6366F1",
+            key=f"new_tag_color_{form_key}",
             label_visibility="collapsed"
         )
     
@@ -72,9 +79,8 @@ def render_tags_page():
                 result = manager.create_tag(new_tag_name.strip(), tag_color)
                 if result:
                     st.toast(f"标签 '{new_tag_name}' 创建成功", icon="✅")
-                    # 清空输入框
-                    st.session_state["tag_input_value"] = ""
-                    st.session_state["tag_color_value"] = "#6366F1"
+                    # 设置清空标志，下次渲染时会更新 form_key 来重置输入框
+                    st.session_state["clear_tag_input"] = True
                     st.rerun()
                 else:
                     st.error("标签名称已存在")

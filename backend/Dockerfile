@@ -6,9 +6,15 @@ LABEL version="2.0"
 
 WORKDIR /app
 
+# 设置时区为中国时间
+ENV TZ=Asia/Shanghai
+
 # 安装系统依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    tzdata \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
