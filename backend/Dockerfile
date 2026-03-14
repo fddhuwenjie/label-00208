@@ -15,8 +15,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 复制依赖文件
 COPY requirements.txt .
 
-# 安装 Python 依赖
-RUN pip install --no-cache-dir -r requirements.txt
+# 安装 Python 依赖（使用 CPU 版本的 PyTorch，支持 x86 和 ARM64）
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip cache purge
 
 # 预下载语义模型（可选，会增加镜像大小但加快首次启动）
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')" || true
