@@ -69,10 +69,11 @@ def render_settings_page():
     
     st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
     
-    btn_col1, btn_col2, spacer = st.columns([1, 1, 6])
+    # 使用两列布局，按钮撑满宽度
+    btn_col1, btn_col2 = st.columns(2)
     
     with btn_col1:
-        if st.button("🔄 重建索引", type="primary"):
+        if st.button("🔄 重建索引", type="primary", use_container_width=True):
             if "documents" in st.session_state and st.session_state.documents:
                 with st.spinner("正在重建索引..."):
                     engine.rebuild_index(st.session_state.documents)
@@ -81,7 +82,7 @@ def render_settings_page():
                 st.warning("请先扫描文档目录")
     
     with btn_col2:
-        if st.button("🗑️ 清空索引", type="secondary"):
+        if st.button("🗑️ 清空索引", type="secondary", use_container_width=True):
             if st.session_state.get("confirm_clear_index", False):
                 engine.clear_index()
                 st.session_state.doc_count = 0

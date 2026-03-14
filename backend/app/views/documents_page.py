@@ -260,28 +260,46 @@ def render_document_list():
                 st.markdown(f'<div style="margin:8px 0;"><span style="color:#64748B;font-size:12px;">已有标签:</span>{tag_badges}</div>', unsafe_allow_html=True)
             
             if doc.paragraphs:
+                # 获取该文档所有已收藏的段落索引
+                all_favorites = cm.get_all_favorites()
+                favorited_keys = {
+                    (f.document_id, f.paragraph_index) 
+                    for f in all_favorites
+                }
+                
                 for para_idx, para in enumerate(doc.paragraphs[:10]):
                     col1, col2 = st.columns([12, 1])
                     
+                    # 检查该段落是否已收藏
+                    is_favorited = (doc.id, para.paragraph_index) in favorited_keys
+                    
                     with col1:
+                        # 已收藏的段落显示金色边框
+                        border_color = "#F59E0B" if is_favorited else "#6366F1"
                         st.markdown(f"""
-<div style="background:#0F172A;padding:12px;border-radius:8px;border-left:3px solid #6366F1;">
-<div style="color:#64748B;font-size:11px;margin-bottom:4px;">段落 {para_idx + 1}</div>
+<div style="background:#0F172A;padding:12px;border-radius:8px;border-left:3px solid {border_color};">
+<div style="color:#64748B;font-size:11px;margin-bottom:4px;">段落 {para_idx + 1}{' ⭐ 已收藏' if is_favorited else ''}</div>
 <div style="color:#94A3B8;font-size:14px;line-height:1.6;">{para.content}</div>
 </div>
 """, unsafe_allow_html=True)
                     
                     with col2:
-                        if st.button("⭐", key=f"fav_doc_{idx}_{para_idx}", help="收藏此段落"):
-                            cm.add_favorite(
-                                document_id=doc.id,
-                                file_name=doc.file_name,
-                                content=para.content,
-                                paragraph_index=para.paragraph_index,
-                                page_number=para.page_number or 0
-                            )
-                            st.toast("已添加到收藏夹", icon="⭐")
-                            st.rerun()
+                        if is_favorited:
+                            # 已收藏，显示实心星（点击取消收藏）
+                            if st.button("⭐", key=f"fav_doc_{idx}_{para_idx}", help="已收藏"):
+                                st.toast("该段落已在收藏夹中", icon="ℹ️")
+                        else:
+                            # 未收藏，显示空心星
+                            if st.button("☆", key=f"fav_doc_{idx}_{para_idx}", help="收藏此段落"):
+                                cm.add_favorite(
+                                    document_id=doc.id,
+                                    file_name=doc.file_name,
+                                    content=para.content,
+                                    paragraph_index=para.paragraph_index,
+                                    page_number=para.page_number or 0
+                                )
+                                st.toast("已添加到收藏夹", icon="⭐")
+                                st.rerun()
                 
                 if len(doc.paragraphs) > 10:
                     st.caption(f"还有 {len(doc.paragraphs) - 10} 个段落未显示")

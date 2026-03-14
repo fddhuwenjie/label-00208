@@ -47,8 +47,11 @@ def render_export_page():
         copy_clicked = st.button("📋 复制", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # 预览
+    # 预览 - 每次点击都重新生成内容
     if preview_clicked:
+        # 清除旧的预览缓存
+        if "export_preview" in st.session_state:
+            del st.session_state["export_preview"]
         st.session_state.export_preview = manager.export_to_markdown(
             include_favorites=include_favorites,
             include_arguments=include_arguments,

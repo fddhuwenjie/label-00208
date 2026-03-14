@@ -53,6 +53,7 @@ def render_tags_page():
         new_tag_name = st.text_input(
             "标签名称",
             placeholder="输入标签名称...",
+            value=st.session_state.get("tag_input_value", ""),
             key="new_tag_name",
             label_visibility="collapsed"
         )
@@ -60,7 +61,7 @@ def render_tags_page():
     with col2:
         tag_color = st.color_picker(
             "颜色",
-            value="#6366F1",
+            value=st.session_state.get("tag_color_value", "#6366F1"),
             key="new_tag_color",
             label_visibility="collapsed"
         )
@@ -70,7 +71,10 @@ def render_tags_page():
             if new_tag_name.strip():
                 result = manager.create_tag(new_tag_name.strip(), tag_color)
                 if result:
-                    st.success(f"标签 '{new_tag_name}' 创建成功")
+                    st.toast(f"标签 '{new_tag_name}' 创建成功", icon="✅")
+                    # 清空输入框
+                    st.session_state["tag_input_value"] = ""
+                    st.session_state["tag_color_value"] = "#6366F1"
                     st.rerun()
                 else:
                     st.error("标签名称已存在")
