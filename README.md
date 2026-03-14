@@ -29,9 +29,15 @@
 
 本项目使用 **深度学习语义模型** 提供真正的语义理解能力，请注意以下事项：
 
+### 平台支持
+- ✅ **Apple Silicon (M1/M2/M3)**: 完整支持，使用 CPU 版本 PyTorch
+- ✅ **Intel Mac**: 完整支持
+- ✅ **Linux (x86_64/ARM64)**: 完整支持
+- ✅ **Windows (WSL2)**: 完整支持
+
 ### 镜像大小
-- Docker 镜像约 **3-4GB**（包含 PyTorch 和语义模型）
-- 首次 `docker compose build` 需要较长时间下载依赖
+- Docker 镜像约 **1.5-2GB**（使用 CPU 版本 PyTorch，无 CUDA 依赖）
+- 首次 `docker compose build` 约需 **5-8 分钟**
 
 ### 首次启动
 - 首次使用语义联想功能时，系统会自动下载语义模型（约 **500MB**）
@@ -50,7 +56,7 @@
 # 1. 将你的文档放入 documents 目录
 cp -r /path/to/your/docs/* documents/
 
-# 2. 构建并启动服务（首次构建约需 10-15 分钟）
+# 2. 构建并启动服务（首次构建约需 5-8 分钟）
 docker compose up --build
 
 # 3. 访问应用
@@ -238,8 +244,18 @@ DISABLE_DEMO_DATA=true streamlit run app/main.py
 |------|----------|----------|
 | CPU | 2 核 | 4 核+ |
 | 内存 | 4GB | 8GB+ |
-| 磁盘 | 10GB | 20GB+ |
+| 磁盘 | 5GB | 10GB+ |
 | 网络 | 首次需联网下载模型 | - |
+| Docker | 20.10+ | 最新版 |
+
+### 支持的平台
+
+| 平台 | 架构 | 支持状态 |
+|------|------|----------|
+| macOS (Apple Silicon) | ARM64 | ✅ 完整支持 |
+| macOS (Intel) | x86_64 | ✅ 完整支持 |
+| Linux | x86_64 / ARM64 | ✅ 完整支持 |
+| Windows (WSL2) | x86_64 | ✅ 完整支持 |
 
 ## 常见问题
 
